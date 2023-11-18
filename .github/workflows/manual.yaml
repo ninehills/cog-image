@@ -1,0 +1,45 @@
+name: Push to Replicate
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v3
+
+      - name: Setup Python
+        uses: actions/setup-python@v4.7.1
+        with:
+          python-version: 3.11
+
+      - name: Setup Cog
+        uses: replicate/setup-cog@v1
+        with:
+          token: ${{ secrets.REPLICATE_API_TOKEN }}
+          install-cuda: 'false'
+
+      - name: Download weights
+        run: |
+          pip install -U huggingface_hub[cli]
+          huggingface-cli download BAAI/bge-reranker-large --local-dir bge-reranker-large/checkpoints --local-dir-use-symlink False
+          huggingface-cli download BAAI/bge-reranker-base --local-dir bge-reranker-base/checkpoints --local-dir-use-symlink False
+
+      - name: 'Login to GitHub Container Registry'
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ninehills
+          password: ${{secrets.GITHUB_TOKEN}}
+
+      - name: Build & Push Image
+        run: |
+          cd bge-reranker-base/ && cog build -t ghcr.io/ninehills/bge-reranker-base:latest && docker push ghcr.io/ninehills/bge-reranker-base:latest
+          cd bge-reranker-large/ && cog build -t ghcr.io/ninehills/bge-reranker-large:latest && docker push ghcr.io/ninehills/bge-reranker-large:latest
+
+      - name: Push to Replicate
+        run: |
+          cog push ninehills/bge-reranker-base
+          cog push ninehills/bge-reranker-large
