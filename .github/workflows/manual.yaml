@@ -37,7 +37,7 @@ jobs:
       - name: Build Image
         run: |
           cd bge-reranker-base/ && cog build -t ghcr.io/ninehills/bge-reranker-base:latest
-          cd bge-reranker-large/ && cog build -t ghcr.io/ninehills/bge-reranker-large:latest
+          cd ../bge-reranker-large/ && cog build -t ghcr.io/ninehills/bge-reranker-large:latest
 
       - name: Push Image to ghcr
         run: |
@@ -46,5 +46,5 @@ jobs:
 
       - name: Push to Replicate
         run: |
-          cog push ninehills/bge-reranker-base
-          cog push ninehills/bge-reranker-large
+          cd bge-reranker-base/ && cog push r8.im/ninehills/bge-reranker-base
+          cd ../bge-reranker-large/ && cog push r8.im/ninehills/bge-reranker-large
