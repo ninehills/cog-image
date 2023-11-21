@@ -34,17 +34,15 @@ jobs:
           username: ninehills
           password: ${{secrets.GITHUB_TOKEN}}
 
-      - name: Build Image
-        run: |
-          cd bge-reranker-base/ && cog build -t ghcr.io/ninehills/bge-reranker-base:latest
-          cd ../bge-reranker-large/ && cog build -t ghcr.io/ninehills/bge-reranker-large:latest
-
-      - name: Push Image to ghcr
-        run: |
-          docker push ghcr.io/ninehills/bge-reranker-base:latest
-          docker push ghcr.io/ninehills/bge-reranker-large:latest
-
       - name: Push to Replicate
         run: |
           cd bge-reranker-base/ && cog push r8.im/ninehills/bge-reranker-base
           cd ../bge-reranker-large/ && cog push r8.im/ninehills/bge-reranker-large
+
+      - name: Push Image to ghcr
+        run: |
+          docker tag r8.im/ninehills/bge-reranker-base:latest ghcr.io/ninehills/bge-reranker-base:latest
+          docker push ghcr.io/ninehills/bge-reranker-base:latest
+          docker tag r8.im/ninehills/bge-reranker-large:latest ghcr.io/ninehills/bge-reranker-large:latest
+          docker push ghcr.io/ninehills/bge-reranker-large:latest
+    
