@@ -20,11 +20,10 @@ class Predictor(BasePredictor):
         self.model.to("cuda")
 
     def predict(self,
-        query: str = Input(description='query'),
-        texts: List[str] = Input(description='texts list'),
+        pairs_json: str = Input(description='Input pairs, eg: [["a", "b"], ["c", "d"]]'),
     ) -> Output:
         """Run a single prediction on the model"""
-        pairs = [[query, text] for text in texts]
+        pairs = json.loads(pairs_json)
         with torch.no_grad():
             inputs = self.tokenizer(pairs, padding=True, truncation=True, return_tensors='pt', max_length=512)
             scores = self.model(**inputs, return_dict=True).logits.view(-1, ).float()
