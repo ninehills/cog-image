@@ -1,0 +1,12 @@
+# Configuration for Cog ⚙️
+# Reference: https://github.com/replicate/cog/blob/main/docs/yaml.md
+
+build:
+  # set to true if your model requires a GPU
+  gpu: true
+  python_version: "3.11"
+  cuda: "11.8"
+  python_packages:
+    - "optimum[onnxruntime-gpu]"
+    - "transformers"
+predict: "predict.py:Predictor"
